@@ -362,7 +362,7 @@ export function OcrBarcodeScanner({ totalAmount, totalQuantity, paymentSummary, 
         </button>
       </div>
 
-      <label className="operator-row sticky-operator-row">
+      <label className="operator-row operator-panel">
         <span>担当者名（任意）</span>
         <select className="operator-input" value={operator} onChange={(event) => setOperator(event.target.value)}>
           <option value="">未選択</option>
