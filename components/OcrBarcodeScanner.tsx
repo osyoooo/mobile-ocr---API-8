@@ -244,11 +244,12 @@ export function OcrBarcodeScanner({ totalAmount, totalQuantity, paymentSummary, 
 
       const hints = new Map();
       hints.set(DecodeHintType.POSSIBLE_FORMATS, ONE_D_FORMATS);
-      hints.set(DecodeHintType.TRY_HARDER, true);
 
+      // 用紙上のバーコードは単独で、枠に水平に合わせて読む運用のため、
+      // 精度優先の TRY_HARDER は使わず、通常モードで高速に走査します。
       const reader = new BrowserMultiFormatOneDReader(hints, {
-        delayBetweenScanAttempts: 60,
-        delayBetweenScanSuccess: 300,
+        delayBetweenScanAttempts: 20,
+        delayBetweenScanSuccess: 100,
         tryPlayVideoTimeout: 10000,
       });
       readerRef.current = reader;
