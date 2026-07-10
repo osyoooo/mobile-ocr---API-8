@@ -680,17 +680,11 @@ h2 {
   font-weight: 900;
 }
 
-.sticky-operator-row {
-  position: sticky;
-  top: 0;
-  z-index: 9;
-  margin: -4px -4px 0;
+.operator-panel {
   padding: 10px;
   border: 1px solid #b2f5ea;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 8px 24px rgba(19, 78, 74, 0.1);
-  backdrop-filter: blur(12px);
+  background: #ffffff;
 }
 
 .operator-input {
