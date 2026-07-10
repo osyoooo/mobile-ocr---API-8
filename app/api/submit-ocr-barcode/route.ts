@@ -23,9 +23,26 @@ const MAX_BARCODE_LENGTH = 256;
 const EXPECTED_BARCODE_PATTERN = /^101\d{6}16$/;
 
 function requiredEnv(name: 'GAS_WEB_APP_URL' | 'GAS_SHARED_SECRET') {
-  const value = process.env[name];
+  const value = process.env[name]?.trim();
   if (!value) throw new Error(`環境変数 ${name} が未設定です。`);
   return value;
+}
+
+function validateGasWebAppUrl(value: string) {
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    throw new Error('GAS_WEB_APP_URL がURLとして正しくありません。Apps ScriptのウェブアプリURL（末尾 /exec）を設定してください。');
+  }
+
+  if (url.protocol !== 'https:' || url.hostname !== 'script.google.com' || !url.pathname.endsWith('/exec')) {
+    throw new Error(
+      'GAS_WEB_APP_URL にはスプレッドシートURLやApps Script編集URLではなく、デプロイ済みウェブアプリのURL（https://script.google.com/.../exec）を設定してください。',
+    );
+  }
+
+  return url.toString();
 }
 
 function normalizeSecret(value: string) {
@@ -99,7 +116,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const gasWebAppUrl = requiredEnv('GAS_WEB_APP_URL');
+    const gasWebAppUrl = validateGasWebAppUrl(requiredEnv('GAS_WEB_APP_URL'));
     const sharedSecret = normalizeSecret(requiredEnv('GAS_SHARED_SECRET'));
 
     const payload = {
@@ -144,14 +161,27 @@ export async function POST(request: Request) {
       return Response.json(
         {
           ok: false,
-          error: `Google Apps Script が HTTP ${gasResponse.status} を返しました。`,
+          error: `Google Apps Script が HTTP ${gasResponse.status} を返しました。GAS_WEB_APP_URL とウェブアプリの公開設定を確認してください。`,
           detail: responseText.slice(0, 500),
         },
         { status: 502 },
       );
     }
 
-    if (!data?.ok) {
+    if (!data) {
+      const returnedHtml = /<!doctype|<html|accounts\.google\.com/i.test(responseText);
+      return Response.json(
+        {
+          ok: false,
+          error: returnedHtml
+            ? 'Google Apps ScriptからJSONではなくログイン画面またはHTMLが返りました。GAS_WEB_APP_URLは末尾が /exec のウェブアプリURLを使い、ウェブアプリをVercelからアクセス可能な設定で再デプロイしてください。'
+            : 'Google Apps Scriptの応答を読み取れませんでした。GAS_WEB_APP_URLが正しい /exec URLか確認してください。',
+        },
+        { status: 502 },
+      );
+    }
+
+    if (!data.ok) {
       const gasError = data?.error ?? 'Google Apps Script 側で保存に失敗しました。';
       const errorMessage =
         gasError === 'unauthorized'
