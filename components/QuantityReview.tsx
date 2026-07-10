@@ -179,13 +179,13 @@ export function QuantityReview({
                     onChange={(event) => selectQuantity(book.no, event.currentTarget.value)}
                     aria-label={`No${book.no} 申込冊数`}
                   >
-                    <option value="0">0冊</option>
+                    <option value="0">0</option>
                     {SINGLE_DIGIT_QUANTITIES.map((option) => (
                       <option key={option} value={option}>
-                        {option}冊
+                        {option}
                       </option>
                     ))}
-                    <option value={MANUAL_QUANTITY_VALUE}>10〜99冊</option>
+                    <option value={MANUAL_QUANTITY_VALUE}>10〜99</option>
                   </select>
                 </div>
 
