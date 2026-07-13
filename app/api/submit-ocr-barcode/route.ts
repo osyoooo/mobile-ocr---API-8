@@ -20,7 +20,7 @@ type GasResponse = {
 };
 
 const MAX_BARCODE_LENGTH = 256;
-const EXPECTED_BARCODE_PATTERN = /^101\d{6}16$/;
+const EXPECTED_BARCODE_PATTERN = /^\d{11}$/;
 
 function requiredEnv(name: 'GAS_WEB_APP_URL' | 'GAS_SHARED_SECRET') {
   const value = process.env[name]?.trim();
@@ -111,7 +111,7 @@ export async function POST(request: Request) {
     }
     if (!EXPECTED_BARCODE_PATTERN.test(barcode)) {
       return Response.json(
-        { ok: false, error: 'バーコード番号は「101＋税理士番号6桁＋16」の11桁である必要があります。' },
+        { ok: false, error: 'バーコード番号は数字11桁である必要があります。' },
         { status: 400 },
       );
     }
