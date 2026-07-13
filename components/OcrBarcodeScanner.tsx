@@ -28,7 +28,7 @@ const OPERATOR_OPTIONS = ['山崎', '山口夏', '志田', '深井', 'ゲスト'
 const BARCODE_PREFIX = '101';
 const BARCODE_SUFFIX = '16';
 const TAX_ACCOUNTANT_NUMBER_DIGITS = 6;
-const EXPECTED_BARCODE_PATTERN = /^101\d{6}16$/;
+const EXPECTED_BARCODE_PATTERN = /^\d{11}$/;
 const ONE_D_FORMATS: BarcodeFormat[] = [
   BarcodeFormat.CODABAR,
   BarcodeFormat.CODE_39,
@@ -185,7 +185,7 @@ export function OcrBarcodeScanner({ totalAmount, totalQuantity, paymentSummary, 
     (value: string, format: string, detectedAt: string) => {
       const normalizedBarcode = normalizeBarcodeDigits(value);
       if (!isExpectedBarcode(normalizedBarcode)) {
-        setStatusMessage('対象形式ではないバーコードを検出しました。「101＋税理士番号6桁＋16」のバーコードを枠の中央に合わせてください。');
+        setStatusMessage('数字11桁ではないバーコードを検出しました。数字11桁のバーコードを枠の中央に合わせてください。');
         return;
       }
 
@@ -293,7 +293,7 @@ export function OcrBarcodeScanner({ totalAmount, totalQuantity, paymentSummary, 
 
     if (!isExpectedBarcode(barcode)) {
       setSaveState('error');
-      setSendErrorMessage('バーコード番号は「101＋税理士番号6桁＋16」の11桁である必要があります。読み直してください。');
+      setSendErrorMessage('バーコード番号は数字11桁である必要があります。読み直してください。');
       setStatusMessage('バーコード番号を確認してください。');
       return;
     }
