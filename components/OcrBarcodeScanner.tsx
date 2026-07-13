@@ -28,7 +28,7 @@ const OPERATOR_OPTIONS = ['山崎', '山口夏', '志田', '深井', 'ゲスト'
 const BARCODE_PREFIX = '101';
 const BARCODE_SUFFIX = '16';
 const TAX_ACCOUNTANT_NUMBER_DIGITS = 6;
-const EXPECTED_BARCODE_PATTERN = /^\d{11}$/;
+const EXPECTED_BARCODE_PATTERN = /^\d{11,13}$/;
 const ONE_D_FORMATS: BarcodeFormat[] = [
   BarcodeFormat.CODABAR,
   BarcodeFormat.CODE_39,
@@ -185,7 +185,7 @@ export function OcrBarcodeScanner({ totalAmount, totalQuantity, paymentSummary, 
     (value: string, format: string, detectedAt: string) => {
       const normalizedBarcode = normalizeBarcodeDigits(value);
       if (!isExpectedBarcode(normalizedBarcode)) {
-        setStatusMessage('数字11桁ではないバーコードを検出しました。数字11桁のバーコードを枠の中央に合わせてください。');
+        setStatusMessage('対象外の桁数を検出しました。数字11〜13桁のバーコードを枠の中央に合わせてください。');
         return;
       }
 
@@ -293,7 +293,7 @@ export function OcrBarcodeScanner({ totalAmount, totalQuantity, paymentSummary, 
 
     if (!isExpectedBarcode(barcode)) {
       setSaveState('error');
-      setSendErrorMessage('バーコード番号は数字11桁である必要があります。読み直してください。');
+      setSendErrorMessage('バーコード番号は数字11〜13桁である必要があります。読み直してください。');
       setStatusMessage('バーコード番号を確認してください。');
       return;
     }
@@ -459,13 +459,14 @@ export function OcrBarcodeScanner({ totalAmount, totalQuantity, paymentSummary, 
             disabled={saveState === 'saving'}
           />
           <small className="field-hint">
-            税理士番号を1〜6桁で入力すると、左側を0で埋めてバーコード番号に変換します。
+            税理士番号を1〜6桁で入力すると、左側を0で埋めて11桁のバーコード番号に変換します。
           </small>
           <small className="field-hint">
             {manualBarcodePreview
               ? `生成されるバーコード番号：${manualBarcodePreview}`
               : '例：税理士番号 1138 → 10100113816'}
           </small>
+          <small className="field-hint">12〜13桁の番号はカメラで読み取ってください。</small>
         </label>
         <button
           className="secondary-button"
